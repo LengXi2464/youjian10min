@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 域名管理</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h1 class="login-title">管理后台登录</h1>
+            <p class="login-description">请输入管理员 API Key 以访问域名管理系统</p>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="apiKey">API Key</label>
+                    <input 
+                        type="password" 
+                        class="form-input" 
+                        id="apiKey" 
+                        placeholder="输入您的 API Key"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn-primary">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理面板 -->
+    <div class="admin-container hidden" id="adminContainer">
+        <!-- 顶部导航 -->
+        <header class="admin-header">
+            <div class="admin-nav">
+                <div class="admin-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span>域名管理后台</span>
+                </div>
+                
+                <div class="admin-actions">
+                    <a href="temp-mail-index.html" class="btn-secondary">返回主页</a>
+                    <button class="btn-secondary" id="logoutBtn">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="admin-main">
+            <div class="admin-content">
+                <!-- 统计卡片 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalDomains">0</div>
+                            <div class="stat-label">总域名数</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="enabledDomains">0</div>
+                            <div class="stat-label">已启用</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-red">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="disabledDomains">0</div>
+                            <div class="stat-label">已禁用</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作区 -->
+                <div class="actions-bar">
+                    <h2 class="section-title">域名列表</h2>
+                    <button class="btn-primary" id="addDomainBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        添加域名
+                    </button>
+                </div>
+
+                <!-- 域名表格 -->
+                <div class="table-container">
+                    <table class="domains-table">
+                        <thead>
+                            <tr>
+                                <th>域名</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="domainsTableBody">
+                            <tr>
+                                <td colspan="5" class="loading-row">加载中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 添加域名模态框 -->
+    <div class="modal" id="addDomainModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加新域名</h3>
+                <button class="modal-close" id="closeAddModal">&times;</button>
+            </div>
+            
+            <form id="addDomainForm">
+                <div class="form-group">
+                    <label class="form-label" for="newDomain">域名</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="newDomain" 
+                        placeholder="example.com"
+                        pattern="^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
+                        required
+                    >
+                    <small class="form-hint">请输入有效的域名格式，例如：example.com</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="newDomainEnabled" checked>
+                        <span>启用此域名</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary">添加域名</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            
+            <p class="confirm-text">确定要删除域名 <strong id="deleteDomainName"></strong> 吗？此操作无法撤销。</p>
+            
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelDelete">取消</button>
+                <button class="btn-danger" id="confirmDelete">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-app.js"></script>
+</body>
+</html>

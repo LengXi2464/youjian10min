@@ -1,0 +1,45 @@
+name = "temp-mail-service"
+main = "workers/email-api.js"
+compatibility_date = "2024-01-01"
+
+# KV命名空间绑定
+[[kv_namespaces]]
+binding = "EMAILS_KV"
+id = "your-emails-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "DOMAINS_KV"
+id = "your-domains-kv-namespace-id"
+
+# 环境变量
+[vars]
+ADMIN_API_KEY = "your-secret-api-key-change-this"
+
+# ==================== Workers配置 ====================
+
+# Email API Worker
+[[services]]
+name = "email-api"
+script = "workers/email-api.js"
+
+# Domain Admin API Worker  
+[[services]]
+name = "domain-admin-api"
+script = "workers/domain-admin-api.js"
+
+# Email Receiver Worker
+[[services]]
+name = "email-receiver"
+script = "workers/email-receiver.js"
+
+# ==================== 路由配置 ====================
+# 根据您的域名配置对应的路由
+
+# 示例路由（需要根据实际域名修改）:
+# [[routes]]
+# pattern = "temp-mail.example.com/api/*"
+# service = "email-api"
+#
+# [[routes]]
+# pattern = "temp-mail.example.com/admin/*"
+# service = "domain-admin-api"
