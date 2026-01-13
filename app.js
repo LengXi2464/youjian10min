@@ -5,8 +5,8 @@
 
 // 配置
 const CONFIG = {
-    API_BASE_URL: 'https://api.your-domain.com', // 需要替换为实际的 Workers API 地址
-    REFRESH_INTERVAL: 10000, // 邮件刷新间隔（毫秒）
+    API_BASE_URL: 'https://temp-email-api.user12464.workers.dev',
+    REFRESH_INTERVAL: 10000,
 };
 
 // 全局状态
